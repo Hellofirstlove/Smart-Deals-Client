@@ -9,8 +9,24 @@ const Register = () => {
             const user = result.user;
             console.log(user);
 
+            const newUser = {
+                name: result.user.displayName,
+                email: result.user.email,
+                image: result.user.photoURL
+            }
+
             // create user in the datbase
-            fetch('http://localhost:3000/users')
+            fetch('http://localhost:3000/users', {
+                method: 'POST',
+                headers: {
+                    'content-type': 'application/json'
+                },
+                body: JSON.stringify(newUser)
+            })
+            .then(res => res.json())
+            .then(data => console.log(data))
+
+
         }).catch(error => {
             console.log(error);
         })
