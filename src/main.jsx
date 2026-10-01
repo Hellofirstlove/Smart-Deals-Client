@@ -10,9 +10,11 @@ import RootLayout from './Component/LayOut/RootLayout.jsx';
 import AllProducts from './Component/Allproducts/Allproducts.jsx';
 import AuthProvider from './contexts/AuthProvider.jsx';
 import Register from './Component/Register/Register.jsx';
+import Login from './Component/Login/Login.jsx';
 import MyProducts from './Component/MyProducts/MyProducts.jsx';
 import MyBids from './Component/MyBids/MyBids.jsx';
 import ProductDetails from './Component/ProductDetails/ProductDetails.jsx'; 
+import CreateProduct from './Component/CreateProduct/CreateProduct.jsx';
 
 const router = createBrowserRouter([
   {
@@ -28,6 +30,10 @@ const router = createBrowserRouter([
         Component: AllProducts
       },
       {
+        path: 'login',
+        Component: Login
+      },
+      {
         path: 'register',
         Component: Register
       },
@@ -38,6 +44,10 @@ const router = createBrowserRouter([
       {
         path: 'myBids',
         Component: MyBids
+      },
+      {
+        path: 'createProduct',
+        Component: CreateProduct
       },
       {
         path: 'productDetails/:id',

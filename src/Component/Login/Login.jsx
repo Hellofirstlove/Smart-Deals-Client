@@ -3,84 +3,42 @@ import { Link, useNavigate } from 'react-router';
 import { AuthContext } from '../../contexts/AuthContext';
 import Swal from 'sweetalert2';
 
-const Register = () => {
-    const { createUser, signInWithGoogle, updateUserProfile } = use(AuthContext);
+const Login = () => {
+    const { signInUser, signInWithGoogle } = use(AuthContext);
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
 
-    // Handle Form Registration
-    const handleRegister = async (e) => {
+    // Handle Email/Password Login
+    const handleLogin = async (e) => {
         e.preventDefault();
         setLoading(true);
 
         const form = e.target;
-        const name = form.name.value.trim();
         const email = form.email.value.trim();
-        const image = form.image.value.trim();
         const password = form.password.value;
 
-        if (!name) {
-            Swal.fire({ icon: 'error', title: 'Oops...', text: 'Please enter your name.' });
-            setLoading(false);
-            return;
-        }
-
-        if (password.length < 6) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Weak Password',
-                text: 'Password should be at least 6 characters long.'
-            });
-            setLoading(false);
-            return;
-        }
-
         try {
-            const userCredential = await createUser(email, password);
-            const user = userCredential.user;
-
-            // Update user profile in Firebase
-            if (updateUserProfile) {
-                await updateUserProfile(name, image);
-            }
-
-            // Save user to MongoDB
-            const newUser = {
-                name,
-                email,
-                image: image || `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=632EE3&color=fff`,
-                created_at: new Date().toISOString()
-            };
-
-            await fetch('http://localhost:3000/users', {
-                method: 'POST',
-                headers: {
-                    'content-type': 'application/json'
-                },
-                body: JSON.stringify(newUser)
-            });
-
+            await signInUser(email, password);
             Swal.fire({
                 icon: 'success',
-                title: 'Registration Successful!',
-                text: `Welcome, ${name}!`,
+                title: 'Login Successful!',
+                text: 'Welcome back to SmartDeals',
                 timer: 1500,
                 showConfirmButton: false
             });
-
             form.reset();
             navigate('/');
         } catch (error) {
-            console.error('Registration error:', error);
-            let message = 'Registration failed. Please try again.';
-            if (error.code === 'auth/email-already-in-use') {
-                message = 'This email is already registered. Please login instead.';
-            } else if (error.code === 'auth/invalid-email') {
-                message = 'Please provide a valid email address.';
+            console.error('Login error:', error);
+            let message = 'Invalid email or password.';
+            if (error.code === 'auth/user-not-found') {
+                message = 'No account found with this email.';
+            } else if (error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') {
+                message = 'Incorrect password or email.';
             }
             Swal.fire({
                 icon: 'error',
-                title: 'Registration Failed',
+                title: 'Login Failed',
                 text: message
             });
         } finally {
@@ -88,13 +46,14 @@ const Register = () => {
         }
     };
 
-    // Handle Google Sign In
-    const handleGoogleSignUp = async () => {
+    // Handle Google Login
+    const handleGoogleSignIn = async () => {
         try {
             setLoading(true);
             const result = await signInWithGoogle();
             const user = result.user;
 
+            // Sync user with MongoDB users collection
             const newUser = {
                 name: user.displayName,
                 email: user.email,
@@ -112,7 +71,7 @@ const Register = () => {
 
             Swal.fire({
                 icon: 'success',
-                title: 'Welcome!',
+                title: 'Welcome Back!',
                 text: `Signed in as ${user.displayName || user.email}`,
                 timer: 1500,
                 showConfirmButton: false
@@ -120,15 +79,26 @@ const Register = () => {
 
             navigate('/');
         } catch (error) {
-            console.error('Google Sign Up Error:', error);
+            console.error('Google Sign In Error:', error);
             Swal.fire({
                 icon: 'error',
-                title: 'Google Sign In Failed',
+                title: 'Sign In Failed',
                 text: error.message
             });
         } finally {
             setLoading(false);
         }
+    };
+
+    // Handle Forgot Password
+    const handleForgotPassword = () => {
+        Swal.fire({
+            title: 'Forgot Password?',
+            text: 'Please contact support or register a new account to continue.',
+            icon: 'info',
+            confirmButtonColor: '#632EE3',
+            confirmButtonText: 'Got it'
+        });
     };
 
     return (
@@ -138,32 +108,18 @@ const Register = () => {
                 {/* Header */}
                 <div className="text-center mb-6">
                     <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 tracking-tight">
-                        Register Now!
+                        Login
                     </h1>
                     <p className="text-xs text-gray-500 mt-1.5">
-                        Already have an account?{' '}
-                        <Link to="/login" className="text-primary font-medium hover:underline">
-                            Login Now
+                        Don't have an account?{' '}
+                        <Link to="/register" className="text-primary font-medium hover:underline">
+                            Register Now
                         </Link>
                     </p>
                 </div>
 
                 {/* Form */}
-                <form onSubmit={handleRegister} className="space-y-4">
-                    {/* Name */}
-                    <div>
-                        <label className="block text-xs font-semibold text-gray-700 mb-1">
-                            Name
-                        </label>
-                        <input
-                            type="text"
-                            name="name"
-                            placeholder="Mariam Swarna"
-                            className="input input-bordered w-full rounded-lg text-sm bg-white border-gray-200 focus:border-primary focus:outline-none placeholder:text-gray-400 placeholder:text-xs"
-                            required
-                        />
-                    </div>
-
+                <form onSubmit={handleLogin} className="space-y-4">
                     {/* Email */}
                     <div>
                         <label className="block text-xs font-semibold text-gray-700 mb-1">
@@ -175,19 +131,6 @@ const Register = () => {
                             placeholder="smsowkothasan@gmail.com"
                             className="input input-bordered w-full rounded-lg text-sm bg-white border-gray-200 focus:border-primary focus:outline-none placeholder:text-gray-400 placeholder:text-xs"
                             required
-                        />
-                    </div>
-
-                    {/* Image-URL */}
-                    <div>
-                        <label className="block text-xs font-semibold text-gray-700 mb-1">
-                            Image-URL
-                        </label>
-                        <input
-                            type="text"
-                            name="image"
-                            placeholder="https://..."
-                            className="input input-bordered w-full rounded-lg text-sm bg-white border-gray-200 focus:border-primary focus:outline-none placeholder:text-gray-400 placeholder:text-xs"
                         />
                     </div>
 
@@ -205,20 +148,31 @@ const Register = () => {
                         />
                     </div>
 
+                    {/* Forgot password */}
+                    <div className="text-left -mt-1">
+                        <button
+                            type="button"
+                            onClick={handleForgotPassword}
+                            className="text-xs text-gray-400 hover:text-primary transition-colors cursor-pointer"
+                        >
+                            Forgot password?
+                        </button>
+                    </div>
+
                     {/* Submit Button */}
                     <div className="pt-2">
                         <button
                             type="submit"
                             disabled={loading}
-                            className="btn btn-primary w-full py-2.5 rounded-xl font-semibold text-sm normal-case shadow-sm hover:shadow transition-all"
+                            className="btn btn-primary w-full py-2.5 rounded-xl font-semibold text-sm normal-case shadow-sm hover:shadow transition-all cursor-pointer"
                         >
                             {loading ? (
                                 <span className="flex items-center justify-center gap-2">
                                     <span className="loading loading-spinner loading-xs"></span>
-                                    Registering...
+                                    Signing In...
                                 </span>
                             ) : (
-                                'Register'
+                                'Sign In'
                             )}
                         </button>
                     </div>
@@ -233,7 +187,7 @@ const Register = () => {
                 <div>
                     <button
                         type="button"
-                        onClick={handleGoogleSignUp}
+                        onClick={handleGoogleSignIn}
                         disabled={loading}
                         className="w-full border border-gray-200 hover:bg-gray-50 bg-white py-2.5 rounded-xl text-xs font-medium text-gray-700 flex items-center justify-center gap-2.5 transition-colors shadow-2xs cursor-pointer"
                     >
@@ -255,7 +209,7 @@ const Register = () => {
                                 d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
                             />
                         </svg>
-                        <span>Sign Up With Google</span>
+                        <span>Sign In With Google</span>
                     </button>
                 </div>
             </div>
@@ -263,4 +217,4 @@ const Register = () => {
     );
 };
 
-export default Register;
+export default Login;
