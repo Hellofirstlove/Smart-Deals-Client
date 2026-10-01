@@ -1,4 +1,4 @@
-import React, { use, useEffect, useRef, useState } from 'react';
+﻿import React, { use, useEffect, useRef, useState } from 'react';
 import { AuthContext } from '../../contexts/AuthContext';
 import Swal from 'sweetalert2';
 
@@ -14,7 +14,7 @@ const MyProducts = () => {
         if (!user?.email) return;
 
         setLoading(true);
-        fetch(`http://localhost:3000/products?email=${user.email}`)
+        fetch(`${import.meta.env.VITE_API_URL}/products?email=${user.email}`)
             .then(res => res.json())
             .then(data => {
                 setProducts(Array.isArray(data) ? data : []);
@@ -39,7 +39,7 @@ const MyProducts = () => {
         }).then(async (result) => {
             if (result.isConfirmed) {
                 try {
-                    const res = await fetch(`http://localhost:3000/products/${id}`, {
+                    const res = await fetch(`${import.meta.env.VITE_API_URL}/products/${id}`, {
                         method: 'DELETE'
                     });
                     const data = await res.json();
@@ -74,7 +74,7 @@ const MyProducts = () => {
         }).then(async (result) => {
             if (result.isConfirmed) {
                 try {
-                    const res = await fetch(`http://localhost:3000/products/${id}`, {
+                    const res = await fetch(`${import.meta.env.VITE_API_URL}/products/${id}`, {
                         method: 'PATCH',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ status: 'sold' })
@@ -129,7 +129,7 @@ const MyProducts = () => {
         };
 
         try {
-            const res = await fetch(`http://localhost:3000/products/${selectedProduct._id}`, {
+            const res = await fetch(`${import.meta.env.VITE_API_URL}/products/${selectedProduct._id}`, {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(updatedData)

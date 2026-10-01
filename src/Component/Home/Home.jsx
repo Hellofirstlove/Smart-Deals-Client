@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+﻿import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router';
 
 const Home = () => {
@@ -8,7 +8,7 @@ const Home = () => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        fetch('http://localhost:3000/latest-products')
+        fetch(`${import.meta.env.VITE_API_URL}/latest-products`)
             .then(res => res.json())
             .then(data => {
                 setRecentProducts(Array.isArray(data) ? data : []);

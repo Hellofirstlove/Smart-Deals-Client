@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+﻿import React, { useEffect, useState } from 'react';
 import { Link, useSearchParams } from 'react-router';
 
 const AllProducts = () => {
@@ -8,7 +8,7 @@ const AllProducts = () => {
     const searchQuery = searchParams.get('search') || '';
 
     useEffect(() => {
-        fetch('http://localhost:3000/products')
+        fetch(`${import.meta.env.VITE_API_URL}/products`)
             .then(res => res.json())
             .then(data => {
                 setProducts(Array.isArray(data) ? data : []);

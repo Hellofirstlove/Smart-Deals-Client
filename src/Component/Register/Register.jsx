@@ -1,4 +1,4 @@
-import React, { use, useState } from 'react';
+﻿import React, { use, useState } from 'react';
 import { Link, useNavigate } from 'react-router';
 import { AuthContext } from '../../contexts/AuthContext';
 import Swal from 'sweetalert2';
@@ -52,7 +52,7 @@ const Register = () => {
                 created_at: new Date().toISOString()
             };
 
-            await fetch('http://localhost:3000/users', {
+            await fetch(`${import.meta.env.VITE_API_URL}/users`, {
                 method: 'POST',
                 headers: {
                     'content-type': 'application/json'
@@ -102,7 +102,7 @@ const Register = () => {
                 created_at: new Date().toISOString()
             };
 
-            await fetch('http://localhost:3000/users', {
+            await fetch(`${import.meta.env.VITE_API_URL}/users`, {
                 method: 'POST',
                 headers: {
                     'content-type': 'application/json'

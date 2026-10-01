@@ -1,4 +1,4 @@
-import React, { use, useState } from 'react';
+﻿import React, { use, useState } from 'react';
 import { Link, useNavigate } from 'react-router';
 import { AuthContext } from '../../contexts/AuthContext';
 import Swal from 'sweetalert2';
@@ -72,7 +72,7 @@ const CreateProduct = () => {
         };
 
         try {
-            const res = await fetch('http://localhost:3000/products', {
+            const res = await fetch(`${import.meta.env.VITE_API_URL}/products`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'

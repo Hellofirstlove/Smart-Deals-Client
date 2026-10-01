@@ -1,4 +1,4 @@
-import React, { use, useEffect, useState } from 'react';
+﻿import React, { use, useEffect, useState } from 'react';
 import { AuthContext } from '../../contexts/AuthContext';
 import Swal from 'sweetalert2';
 
@@ -11,7 +11,7 @@ const MyBids = () => {
     useEffect(() => {
         if (!user?.email) return;
 
-        fetch(`http://localhost:3000/bids?email=${user.email}`)
+        fetch(`${import.meta.env.VITE_API_URL}/bids?email=${user.email}`)
             .then(res => res.json())
             .then(async (bidsData) => {
                 setBids(bidsData);
@@ -22,7 +22,7 @@ const MyBids = () => {
 
                 await Promise.all(
                     uniqueIds.map(id =>
-                        fetch(`http://localhost:3000/products/${id}`)
+                        fetch(`${import.meta.env.VITE_API_URL}/products/${id}`)
                             .then(res => res.json())
                             .then(product => { productMap[id] = product; })
                             .catch(() => {})
@@ -49,7 +49,7 @@ const MyBids = () => {
             confirmButtonText: 'Yes, remove it!',
         }).then((result) => {
             if (result.isConfirmed) {
-                fetch(`http://localhost:3000/bids/${bidId}`, { method: 'DELETE' })
+                fetch(`${import.meta.env.VITE_API_URL}/bids/${bidId}`, { method: 'DELETE' })
                     .then(res => res.json())
                     .then(data => {
                         if (data.deletedCount > 0) {

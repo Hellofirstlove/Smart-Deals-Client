@@ -1,4 +1,4 @@
-import React, { use, useEffect, useRef, useState } from 'react';
+﻿import React, { use, useEffect, useRef, useState } from 'react';
 import { Link, useLoaderData, useNavigate } from 'react-router';
 import { AuthContext } from '../../contexts/AuthContext';
 import Swal from 'sweetalert2';
@@ -41,7 +41,7 @@ const ProductDetails = () => {
     // Fetch bids for this product
     useEffect(() => {
         if (!productId) return;
-        fetch(`http://localhost:3000/bids/byProduct/${productId}`)
+        fetch(`${import.meta.env.VITE_API_URL}/bids/byProduct/${productId}`)
             .then(res => res.json())
             .then(data => setBids(Array.isArray(data) ? data : []))
             .catch(err => console.error('Failed to load bids:', err));
@@ -136,7 +136,7 @@ const ProductDetails = () => {
         setBiddingLoading(true);
 
         try {
-            const res = await fetch('http://localhost:3000/bids', {
+            const res = await fetch(`${import.meta.env.VITE_API_URL}/bids`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(newBid),
@@ -195,14 +195,14 @@ const ProductDetails = () => {
         if (confirm.isConfirmed) {
             try {
                 // Update Bid Status
-                await fetch(`http://localhost:3000/bids/${bidId}`, {
+                await fetch(`${import.meta.env.VITE_API_URL}/bids/${bidId}`, {
                     method: 'PATCH',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ status: 'accepted' }),
                 });
 
                 // Update Product Status to Sold
-                await fetch(`http://localhost:3000/products/${productId}`, {
+                await fetch(`${import.meta.env.VITE_API_URL}/products/${productId}`, {
                     method: 'PATCH',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ status: 'sold' }),
@@ -239,7 +239,7 @@ const ProductDetails = () => {
 
         if (confirm.isConfirmed) {
             try {
-                await fetch(`http://localhost:3000/bids/${bidId}`, {
+                await fetch(`${import.meta.env.VITE_API_URL}/bids/${bidId}`, {
                     method: 'PATCH',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ status: 'rejected' }),
