@@ -1,4 +1,4 @@
-﻿import React, { use, useEffect, useRef, useState } from 'react';
+import React, { use, useEffect, useRef, useState } from 'react';
 import { Link, useLoaderData, useNavigate } from 'react-router';
 import { AuthContext } from '../../contexts/AuthContext';
 import Swal from 'sweetalert2';
@@ -8,10 +8,22 @@ const ProductDetails = () => {
     const { user } = use(AuthContext);
     const navigate = useNavigate();
 
-    const [product, setProduct] = useState(loadedProduct);
+    const [product, setProduct] = useState(loadedProduct || null);
     const [bids, setBids] = useState([]);
     const [biddingLoading, setBiddingLoading] = useState(false);
     const bidModalRef = useRef(null);
+
+    // Guard: if product failed to load, show error
+    if (!product || !product._id) {
+        return (
+            <div className="min-h-screen flex flex-col items-center justify-center gap-4 text-center px-4">
+                <p className="text-5xl">😕</p>
+                <h2 className="text-2xl font-bold text-gray-800">Product Not Found</h2>
+                <p className="text-gray-500 text-sm">This product may have been removed or the link is invalid.</p>
+                <a href="/allProducts" className="btn btn-primary rounded-xl mt-2">Back to Products</a>
+            </div>
+        );
+    }
 
     const {
         _id: productId,

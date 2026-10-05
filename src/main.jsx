@@ -1,4 +1,4 @@
-﻿import { StrictMode } from 'react'
+import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App.jsx'
@@ -51,7 +51,7 @@ const router = createBrowserRouter([
       },
       {
         path: 'productDetails/:id',
-        loader: ({params}) => fetch(`${import.meta.env.VITE_API_URL}/products/${params.id}`),
+        loader: ({params}) => fetch(`${import.meta.env.VITE_API_URL}/products/${params.id}`).then(res => res.json()),
         Component: ProductDetails
       }
     ]
